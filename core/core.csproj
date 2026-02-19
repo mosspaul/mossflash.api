@@ -4,6 +4,12 @@
     <ProjectReference Include="..\data\data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs/" />
+    <Folder Include="Managers/" />
+    <Folder Include="Managers/Interfaces/" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
