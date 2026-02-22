@@ -2,7 +2,7 @@ using System;
 
 namespace core.Managers.Interfaces;
 
-public interface IFlashCardsManager
+public interface IQuizManager
 {
 
 }
