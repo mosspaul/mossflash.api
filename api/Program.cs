@@ -18,5 +18,12 @@ builder.Services.AddDbContext<MossFlashDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString(connectionString)));
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var database = scope.ServiceProvider.GetRequiredService<MossFlashDbContext>();
+    database.Database.Migrate();
+}
+
 app.MapControllers();
 app.Run();
