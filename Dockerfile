@@ -4,13 +4,13 @@ WORKDIR /src
 COPY . .
 
 RUN dotnet restore
-RUN dotnet publish Flashcards.Api/Flashcards.Api.csproj -c Release -o /app
+RUN dotnet publish api/api.csproj -c Release -o /app
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 
 COPY --from=build /app .
 
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "Flashcards.Api.dll"]
+ENTRYPOINT ["dotnet", "api.dll"]
