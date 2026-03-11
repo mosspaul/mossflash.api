@@ -15,7 +15,7 @@ var connectionString =
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<MossFlashDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString(connectionString)));
+    opt.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
