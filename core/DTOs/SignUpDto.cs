@@ -10,7 +10,7 @@ public class SignUpDto
     public SignUpDto(IEncrypter encrypter)
     {
         _encrypter = encrypter;
-        this.Password = _encrypter.Encrypt(this.Password);
+        // this.Password = _encrypter.Encrypt(this.Password);
     }
     [JsonPropertyName("username")]
     public required string Username { get; set; }
