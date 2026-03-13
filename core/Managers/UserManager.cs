@@ -5,7 +5,7 @@ using data.Repositories.Interfaces;
 
 namespace core.Managers;
 
-class UserManager : IUserManager
+public class UserManager : IUserManager
 {
     private readonly IMossFlashRepository _repo;
     private readonly IDtoToModelMapper _dtoToModelMapper;
