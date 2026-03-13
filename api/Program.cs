@@ -22,7 +22,20 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var database = scope.ServiceProvider.GetRequiredService<MossFlashDbContext>();
-    database.Database.Migrate();
+
+    for (int i = 0; i < 10; i++)
+    {
+        try
+        {
+            database.Database.Migrate();
+            break;
+        }
+        catch
+        {
+            Console.WriteLine("DB not ready yet...");
+            Thread.Sleep(5000);
+        }
+    }
 }
 
 app.MapControllers();
