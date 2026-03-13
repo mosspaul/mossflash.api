@@ -15,7 +15,7 @@ public class DtoToModelMapper : IDtoToModelMapper
             Email = signUpDto.Email,
             FirstName = signUpDto.FirstName,
             LastName = signUpDto.LastName,
-            DateCreated = DateTime.Now,
+            DateCreated = DateTime.UtcNow,
             Id = 0
         };
     }
