@@ -5,13 +5,6 @@ namespace core.DTOs;
 
 public class SignUpDto
 {
-
-    private readonly IEncrypter _encrypter;
-    public SignUpDto(IEncrypter encrypter)
-    {
-        _encrypter = encrypter;
-        // this.Password = _encrypter.Encrypt(this.Password);
-    }
     [JsonPropertyName("username")]
     public required string Username { get; set; }
     [JsonPropertyName("email")]
