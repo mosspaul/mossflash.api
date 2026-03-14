@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using data.DbContexts;
@@ -11,9 +12,11 @@ using data.DbContexts;
 namespace data.Migrations
 {
     [DbContext(typeof(MossFlashDbContext))]
-    partial class MossFlashDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260314234232_usersadd")]
+    partial class usersadd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
