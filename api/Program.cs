@@ -47,8 +47,9 @@ using (var scope = app.Services.CreateScope())
             database.Database.Migrate();
             break;
         }
-        catch
+        catch (Exception ex)
         {
+	    Console.WriteLine($"{ex.Message}");
             Console.WriteLine("DB not ready yet...");
             Thread.Sleep(5000);
         }
