@@ -1,14 +1,14 @@
 using System;
-using core.DTOs;
+using core.DTOs.UserDtos;
 
 namespace core.Managers.Interfaces;
 
 public interface IUserManager
 {
-    Task<ProfileDto> SignUp(SignUpDto signUpDto);
+    Task<ProfileDto?> SignUp(SignUpDto signUpDto);
     Task<bool> Login(LoginDto loginDto);
-    Task<ProfileDto> GetProfile(int userId);
-    Task EditProfile(ProfileDto userDetailsDto);
-    Task DeleteAccount(int userId);
-    Task EditPassword(int userId, string newPassword);
+    Task<ProfileDto?> GetProfile(int userId);
+    Task<ProfileDto?> EditProfile(ProfileDto userDetailsDto);
+    Task<bool> DeleteAccount(int userId);
+    Task<bool> EditPassword(int userId, EditPasswordDto newPassword);
 }

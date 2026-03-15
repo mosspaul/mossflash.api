@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using core.Middleware.Interfaces;
 
-namespace core.DTOs;
+namespace core.DTOs.UserDtos;
 
 public class SignUpDto
 {

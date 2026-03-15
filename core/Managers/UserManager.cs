@@ -1,4 +1,4 @@
-using core.DTOs;
+using core.DTOs.UserDtos;
 using core.Managers.Interfaces;
 using core.Mappers.Interfaces;
 using data.Repositories.Interfaces;
@@ -7,46 +7,49 @@ namespace core.Managers;
 
 public class UserManager : IUserManager
 {
-    private readonly IMossFlashRepository _repo;
+    private readonly IUserRepository _repo;
     private readonly IDtoToModelMapper _dtoToModelMapper;
     public UserManager(
-        IMossFlashRepository repo, 
+        IUserRepository repo, 
         IDtoToModelMapper dtoToModelMapper
         )
     {
         _repo = repo;
         _dtoToModelMapper = dtoToModelMapper;
     }
-    public async Task DeleteAccount(int userId)
+    public async Task<bool> DeleteAccount(int userId)
     {
-        throw new NotImplementedException();
+        return await _repo.DeleteAccount(userId);
     }
 
-    public async Task EditPassword(int userId, string newPassword)
+    public async Task<bool> EditPassword(int userId, EditPasswordDto newPassword)
     {
-        throw new NotImplementedException();
+        return await _repo.EditPassword(userId, newPassword.NewPassword);
     }
 
-    public async Task EditProfile(ProfileDto userDetailsDto)
+    public async Task<ProfileDto?> EditProfile(ProfileDto profile)
     {
-        throw new NotImplementedException();
+        var user = _dtoToModelMapper.ProfileToUser(profile);
+        var updatedUser = await _repo.EditProfile(user);
+        return updatedUser != null ? new ProfileDto(updatedUser) : null;
     }
 
-    public async Task<ProfileDto> GetProfile(int userId)
+    public async Task<ProfileDto?> GetProfile(int userId)
     {
-        throw new NotImplementedException();
+        var user = await _repo.GetProfile(userId);
+        return user != null ? new ProfileDto(user) : null;
     }
 
-    public async Task<bool> Login(LoginDto loginDto)
+    public async Task<bool> Login(LoginDto login)
     {
-        bool isLoggedIn = await _repo.Login(loginDto.Username, loginDto.Password);
+        bool isLoggedIn = await _repo.Login(login.Username, login.Password);
         return isLoggedIn;
     }
 
-    public async Task<ProfileDto> SignUp(SignUpDto signUpDto)
+    public async Task<ProfileDto?> SignUp(SignUpDto signUp)
     {
-        var user = _dtoToModelMapper.SignUpToUser(signUpDto);
+        var user = _dtoToModelMapper.SignUpToUser(signUp);
         var createdUser = await _repo.SignUp(user);
-        return new ProfileDto(createdUser);
+        return createdUser != null ? new ProfileDto(createdUser) : null;
     }
 }

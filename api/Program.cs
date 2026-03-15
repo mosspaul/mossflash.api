@@ -29,7 +29,7 @@ builder.Services.AddScoped<IDtoToModelMapper, DtoToModelMapper>();
 builder.Services.AddScoped<IEncrypter, Encrypter>();
 
 // Add Data layer -> make function later
-builder.Services.AddScoped<IMossFlashRepository, MossFlashRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddDbContext<MossFlashDbContext>(opt =>
     opt.UseNpgsql(connectionString));
