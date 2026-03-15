@@ -1,55 +1,101 @@
 using System;
-using System.Reflection.Metadata;
+using System.Reflection;
+using System.Threading.Tasks;
 using data.DbContexts;
-using data.Repositories.Interfaces;
 using data.Models;
-using System.Security.Cryptography.X509Certificates;
+using data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace data.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly MossFlashDbContext _db;
-    public UserRepository(MossFlashDbContext db)
+    public readonly MossFlashDbContext _context;
+    public UserRepository(MossFlashDbContext context)
     {
-        _db = db;
+        _context = context;
+    }
+    public async Task<bool> DeleteAccount(int userId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user != null)
+        {
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        return false;
     }
 
-    public async Task<User> CreateAccount()
+    public async Task<bool> EditPassword(int userId, string newPassword)
     {
-        var user = new User();
-        await _db.Users.AddAsync(user);
-        await _db.SaveChangesAsync();
-        return user;
+        var userToUpdatePassword = await GetUserById(userId);
+        if (userToUpdatePassword != null)
+        {
+            userToUpdatePassword.PasswordHash = newPassword;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        return false;
     }
 
-    public async Task DeleteAccount(User user)
+    public async Task<User?> EditProfile(User user)
     {
-        await DeleteFromUsers(user.Id);
-    }
-    public async Task<User> GetUser(int userId)
-    {
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId) ?? throw new NullReferenceException("User doesn't exist!");
-        return user;
-    }
-
-    public async Task EditAccount(User user)
-    {
-        var userToChange = await _db.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-        userToChange = user;
-        await _db.SaveChangesAsync();
+        var userToUpdate = await GetUserById(user.Id);
+        if (userToUpdate == null)
+        {
+            return null;
+        }
+        MapUser(userToUpdate, user);
+        await _context.SaveChangesAsync();
+        return userToUpdate;
     }
 
-    public Task<User> Login()
+    public async Task<User?> GetProfile(int userId)
     {
-        throw new NotImplementedException();
+        return await GetUserById(userId);
     }
 
-    private async Task DeleteFromUsers(int userId)
+    public async Task<bool> Login(string username, string password)
     {
-        var userToDelete = _db.Users.FirstOrDefault(user => user.Id == userId) ?? throw new NullReferenceException("User doesn't exist!");
-        _db.Users.Remove(userToDelete);
-        await _db.SaveChangesAsync();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        if (user != null)
+        {
+            user.PasswordHash = password;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        return false;
+    }
+
+    public async Task<User?> SignUp(User user)
+    {
+        if (await CheckUniqueUsernameAndEmail(user))
+        {
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
+        return null;
+    }
+
+    private async Task<User?> GetUserById(int userId)
+    {
+        return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+    }
+
+    private void MapUser(User userToUpdate, User newUserProfile)
+
+    {
+        userToUpdate.Username = newUserProfile.Username;
+        userToUpdate.Email = newUserProfile.Email;
+        userToUpdate.LastName = newUserProfile.LastName;
+        userToUpdate.FirstName = newUserProfile.FirstName;
+    }
+    private async Task<bool> CheckUniqueUsernameAndEmail(User newUser)
+    {
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == newUser.Username || u.Email == newUser.Email);
+        return existingUser == null;
     }
 }
+

@@ -1,11 +1,9 @@
+using core.DTOs.UserDtos;
 using core.Managers.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using data.Models;
-using DTOs;
 
-namespace api.Controllers;
+namespace api;
+
 [Route("api/[controller]")]
 [ApiController]
 public class UserController : ControllerBase
@@ -16,31 +14,89 @@ public class UserController : ControllerBase
         _userManager = userManager;
     }
 
+    // POST SignUp -> receives a userdto and password and then maps to user 
+    [HttpPost("signup")]
+    public async Task<IActionResult> SignUp([FromBody] SignUpDto signUpDto)
+    {
+        try
+        {
+            var profile = await _userManager.SignUp(signUpDto);
+            return profile != null ? Ok(profile) : Forbid("Username or Email is already registered. Please try with different credentials.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    // POST Login -> receives a username and password and checks that it exists, if so logs in to app
     [HttpPost("login")]
-    public async Task<IActionResult> Login()
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
-        var user = await _userManager.Login();
-        return Ok(user);
+        try
+        {
+            var result = await _userManager.Login(loginDto);
+            return !result ? Ok(result) : Forbid("Login failed. Username or password is incorrect. Try again.");
+        }
+        catch (Exception ex)
+        {
+            
+            return BadRequest(ex.Message);
+        }
     }
-
-    [HttpPost("users")]
-    public async Task<IActionResult> CreateAccount()
+    // GET GetProfile -> recieves an id and with that gets the user's profile (returns profiledto)
+    [HttpGet("profile/{id}")]
+    public async Task<IActionResult> GetProfile(int id)
     {
-        var user = await _userManager.CreateAccount();
-        return CreatedAtRoute("", user);
+        try
+        {
+            var profile = await _userManager.GetProfile(id);
+            return profile != null ? Ok(profile) : NotFound();
+        } 
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    } 
+    // PUT/PATCH EditAccount-> receives an new userdto and maps that to the new profile (id is not changed)
+    [HttpPut("profile/{id}")]
+    public async Task<IActionResult> EditProfile([FromBody] ProfileDto profileDto)
+    {
+        try
+        {
+            var profile = await _userManager.EditProfile(profileDto);
+            return profile != null ? Ok(profile) : NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
-    [HttpDelete("users")]
-    public async Task<IActionResult> DeleteAccount([FromBody] User user)
+    // DELETE DeleteAccount -> recieves a userid with which to delete the account
+    [HttpDelete("profile/{id}")]
+    public async Task<IActionResult> DeleteProfile(int id)
     {
-        await _userManager.DeleteAccount(user);
-        return NoContent();
+        try
+        {
+            var accountDeleted = await _userManager.DeleteAccount(id);
+            return accountDeleted ? NoContent() : BadRequest("There was a problem deleting the account.");
+        } 
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
-
-    [HttpPatch("users")]
-    public async Task<IActionResult> EditAccount([FromBody] EditAccountOptions accountOptions)
+    // PUT/PATCH EditPassword -> receives a userid and new password to update
+    [HttpPatch("profile/{id}")]
+    public async Task<IActionResult> EditPassword(int id, [FromBody] EditPasswordDto editPassword)
     {
-        var user = await _userManager.EditAccount(accountOptions);
-        return Ok(user);
+        try
+        {
+            var passwordChanged = await _userManager.EditPassword(id, editPassword);
+            return passwordChanged ? NoContent() : BadRequest("Password could not be changed. Try again.");
+            
+        } catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }
-

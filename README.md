@@ -13,3 +13,13 @@
 ## Next Steps:
 1. User stories 
 2. Data relationship
+
+
+## for adding database
+```sql
+CREATE DATABASE flashcards;
+
+CREATE USER flashcards_user WITH PASSWORD 'securepassword';
+
+GRANT ALL PRIVILEGES ON DATABASE flashcards TO flashcards_user;
+```
